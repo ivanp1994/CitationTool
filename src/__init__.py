@@ -6,4 +6,4 @@ Created on Tue Aug 13 08:12:54 2024
 """
 __all__=["run_application"]
 
-from gui import run_application
+from .gui import run_application
