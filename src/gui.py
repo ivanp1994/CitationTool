@@ -336,9 +336,9 @@ class FetchDOIApp(qtw.QMainWindow):
 
         all_dois = []
         for idx, file_path in enumerate(self.file_paths):
-            reference_dict = ct.extract_references(file_path)
+            reference_dict = extract_references(file_path)
             self.lref_dict[file_path] = reference_dict
-            all_dois.extend(ct.merge_dois(reference_dict))
+            all_dois.extend(merge_dois(reference_dict))
             self.progressBar.setValue(idx+1)
         all_dois = list(set(all_dois))
         _text = f"Extracted all DOIs - total of {len(all_dois)} DOIS"
@@ -374,7 +374,7 @@ class FetchDOIApp(qtw.QMainWindow):
                     valid_previous_doi = "\n" + previous_citation
 
             self.statusLabel.setText(f"Fetched doi {ids}\n{valid_previous_doi}{next_doi}")
-            previous_citation = ct.fetch_request(ct.CN_BASE_URL + "/" + ids.strip())
+            previous_citation = fetch_request(CN_BASE_URL + "/" + ids.strip())
             doi_dictionary[ids] = previous_citation
             time.sleep(0.004)
             self.progressBar.setValue(idx + 1)  # Update progress bar
@@ -398,14 +398,14 @@ class FetchDOIApp(qtw.QMainWindow):
         # time.sleep(5)
 
         _end_literature = sorted(list({v for v in self.doi_dict.values() if v is not None}))
-        _lit_loc = ct.save_literature_to_docx(_end_literature, self.file_paths[-1])
+        _lit_loc = save_literature_to_docx(_end_literature, self.file_paths[-1])
         self.statusLabel.setText(f'Saved literature to <font color = "green">{_lit_loc}</font>')
         qtw.QApplication.processEvents()  # Process events to keep GUI responsive
 
         time.sleep(5)
 
         # Now from doi dict which is DOI citation I want to create citation_intext
-        self._cit_intext = {k: ct.intext_cit(v)
+        self._cit_intext = {k: intext_cit(v)
                             for k, v in self.doi_dict.items() if v is not None}
 
         # {file : {"[LR...]":[doi,doi]}}
@@ -415,14 +415,14 @@ class FetchDOIApp(qtw.QMainWindow):
         display_text = ""
         idx = 0
         for file, wtdict in self.lref_dict.items():
-            good, bad = ct.generate_replacer(wtdict, self._cit_intext)
+            good, bad = generate_replacer(wtdict, self._cit_intext)
             good_replacer[file] = good
             bad_replacer[file] = bad
 
             file_name = os.path.basename(file)
-            result_name = ct.add_suffix(file, "_proc")
+            result_name = add_suffix(file, "_proc")
 
-            ct.save_document(file, result_name, good)
+            save_document(file, result_name, good)
 
             idx = idx + 1
             self.progressBar.setValue(idx + 1)  # Update progress bar
@@ -431,7 +431,7 @@ class FetchDOIApp(qtw.QMainWindow):
 
             qtw.QApplication.processEvents()  # Process events to keep GUI responsive
 
-            _bad_sentences = [f"\t{x}" for x in ct.recognize_bad_dois(file, list(bad.keys()))]
+            _bad_sentences = [f"\t{x}" for x in recognize_bad_dois(file, list(bad.keys()))]
 
             bad_sentences = bad_sentences + f'<font color="green">{file_name}</font><br>---<br>' + "\n".join(_bad_sentences) + "<br><br>"
 
