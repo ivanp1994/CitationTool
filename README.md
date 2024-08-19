@@ -32,7 +32,7 @@ Python version I used this is 3.8.12. Because of f-strings, I don't really recom
 Requirements are outlined in requirements.txt. But they are:
 ```
 tqdm==4.62.3
-docx==0.8.11
+python-docx==0.8.11
 requests==2.27.1
 ```
 ## Why not make an installable module
